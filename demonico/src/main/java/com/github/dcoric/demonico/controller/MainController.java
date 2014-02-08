@@ -19,8 +19,11 @@ public class MainController {
 	
 	private static Logger log = Logger.getLogger(MainController.class);
 	
-	@Autowired
+	@Autowired(required=true)
 	private UserService userService;
+	
+	public MainController() {
+	}
 	
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String home(ModelMap model) {
@@ -31,15 +34,34 @@ public class MainController {
 		model.addAttribute(user);
 		return "index";
 	}
+	
+	@RequestMapping(value = "/insertUser", method = RequestMethod.GET)
+	public String insertUser(ModelMap model) {
+		log.info("Create new!");
+		User user = new User();
+		setTestData(user);
+		user.setInsertionDate(Calendar.getInstance().getTime());
+		userService.persistUser(user);
+		model.addAttribute(user);
+		return "index";
+	}
 
 	private void setTestData(User user) {
 		user.setFirstName("Denis");
-		user.setLastName("Ä†oriÄ‡");
+		user.setLastName("Æoriæ");
 		user.setUsername("denis.coric");
 		user.setPassword("test123");
 		Calendar cal  = Calendar.getInstance();
 		cal.set(1985, 12, 27, 19, 15);
 		user.setBirthDate(cal.getTime());
+	}
+
+	public UserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(UserService userService) {
+		this.userService = userService;
 	}
 
 }

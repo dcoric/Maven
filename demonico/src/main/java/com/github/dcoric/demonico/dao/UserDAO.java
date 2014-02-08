@@ -1,15 +1,19 @@
 package com.github.dcoric.demonico.dao;
 
+import java.util.List;
+
 import com.github.dcoric.demonico.model.User;
 
 public interface UserDAO {
 	
-	void persistUser(User user);
+	public void persistUser(User user);
 	
-	User findUserById(Integer id);
+	public User findUserById(Integer id);
 	
-	void updateUser(User user);
+	public List<User> findUserByName(String firstName, String lastName);
 	
-	void deleteUser(User user);
+	public void updateUser(User user);
+	
+	public void deleteUser(User user);
 
 }

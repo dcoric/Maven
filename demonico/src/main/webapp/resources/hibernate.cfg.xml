@@ -6,8 +6,7 @@
 <hibernate-configuration>
 
 	<session-factory name="java:hibernate/SessionFactory">
-		<mapping class="model.Company" />
-		<mapping class="model.Employee" />
+		<mapping class="com.github.dcoric.demonico.model.User" />
     </session-factory>
     
 </hibernate-configuration>

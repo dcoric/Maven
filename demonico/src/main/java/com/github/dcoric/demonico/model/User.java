@@ -4,28 +4,31 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "user")
 public class User {
 	
 	@Id
-	@Column(name = "ID", nullable = false)
+	@Column(name = "id", nullable = false)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(name = "USERNAME", nullable = false)
+	@Column(name = "username", nullable = false)
 	private String username;
 	
-	@Column(name = "PASSWORD", nullable = false)
+	@Column(name = "password", nullable = false)
 	private String password;
 	
-	@Column(name = "FIRST_NAME", nullable = true)
+	@Column(name = "first_name", nullable = true)
 	private String firstName;
 	
-	@Column(name = "LAST_NAME", nullable = true)
+	@Column(name = "last_name", nullable = true)
 	private String lastName;
 	
 	@Column(name = "birth_date", nullable = true)

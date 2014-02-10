@@ -19,7 +19,25 @@
 
 <!-- Bootstrap core CSS -->
 <link href="<c:url value='/css/bootstrap.css' />" rel="stylesheet">
+<link href="<c:url value='/css/datepicker3.css' />" rel="stylesheet">
+<!-- Bootstrap core JavaScript
+    ================================================== -->
+<script src="<c:url value='/js/jquery.min.js' />"></script>
+<script src="<c:url value='/js/bootstrap.min.js' />"></script>
+<script src="<c:url value='/js/bootstrap-datepicker.rs-latin.js' />"></script>
+<script src="<c:url value='/js/bootstrap-datepicker.js' />"></script>
 
+<script>
+$(document).ready(function(){
+	var nowTemp = new Date();
+	var now = new Date('dd.mm.yyyy', nowTemp);
+	$('#sandbox-container .input-group.date').datepicker({
+	    format: "dd.mm.yyyy",
+	    weekStart: 1
+	});
+});
+
+</script>
 </head>
 
 <body>
@@ -31,7 +49,7 @@
 					class="icon-bar"></span> <span class="icon-bar"></span> <span
 					class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="#">Brand ${test }</a>
+			<a class="navbar-brand" href="#">Brand ${test}</a>
 		</div>
 		<p class="navbar-text pull-right">
 			Signed in as <a href="#" class="navbar-link">
@@ -83,17 +101,62 @@
 					</p>
 				</div>
 			</div>
+			<div class="well">
+			<c:choose>
+			<c:when test="success==true"><h2>Saved!</h2></c:when>
+			<c:otherwise>
+			<h2>New User</h2>
+				<form class="form-horizontal" role="form" method="POST" action="newUser">
+				  <div class="form-group">
+				    <label for="inputUsername" class="col-sm-2 control-label">Username</label>
+				    <div class="col-sm-10">
+				      <input name="username" type="text" class="form-control" id="inputUsername" placeholder="Username">
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="inputPassword" class="col-sm-2 control-label">Password</label>
+				    <div class="col-sm-10">
+				      <input name="password" type="password" class="form-control" id="inputPassword" placeholder="Password">
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="inputBirthDate" class="col-sm-2 control-label">Date of birth</label>
+				    <div class="span5 col-md-10" id="sandbox-container">
+				    	<div class="input-group date">
+					  		<input name="birthDate" type="text" class="form-control" placeholder="Birth date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+						</div>
+					</div>
+				  </div>			
+				  <div class="form-group">
+				    <label for="inputFirstName" class="col-sm-2 control-label">First name</label>
+				    <div class="col-sm-10">
+				      <input name="firstName" type="text" class="form-control" id="inputFirstName" placeholder="Name">
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="inputLastName" class="col-sm-2 control-label">Last name</label>
+				    <div class="col-sm-10">
+				      <input name="lastName" type="text" class="form-control" id="inputLastName" placeholder="Last name">
+				    </div>
+				  </div>
+				  
+				  <div class="form-group">
+				    <div class="col-sm-offset-2 col-sm-10">
+				      <button type="submit" class="btn btn-default">Sign in</button>
+				    </div>
+				  </div>
+				</form>
+				</c:otherwise>
+			</c:choose>
+			</div>
 		</div>
+
 	</div>
 	<!-- /container -->
 
 
 
-	<!-- Bootstrap core JavaScript
-    ================================================== -->
-	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="<c:url value='/js/jquery.min.js' />"></script>
-	<script src="<c:url value='/js/bootstrap.min.js' />"></script>
+
 
 </body>
 </html>

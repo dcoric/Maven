@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.github.dcoric.demonico.dao.UserDAO;
@@ -21,6 +23,7 @@ public class UserDAOImpl implements UserDAO {
 	private static Logger log = Logger.getLogger(UserDAOImpl.class);
 	
 	@Autowired(required=true)
+	@Qualifier("sessionFactory")
 	private SessionFactory sessionFactory;
 	
 	public UserDAOImpl(){
@@ -63,6 +66,29 @@ public class UserDAOImpl implements UserDAO {
 		}
 
 		
+		return result;
+	}
+
+	public User findUserByUsername(String username) {
+		if(username == null || username.equals(""))
+			return null;
+		User result = null;
+		String queryString = "from User u where u.username = :username";
+		Query query = null;
+		try{
+		query = sessionFactory.getCurrentSession().createQuery(queryString);
+		query.setParameter("username", username);
+		} catch (Exception e) {
+			log.error(e);
+		}
+		try{
+			if(query!=null)
+				result = (User)query.uniqueResult();
+		} catch(NonUniqueResultException e) {
+			log.warn(":> Username ["+username+"] nije jedinstveno! " + e);
+		} catch(NoResultException e) {
+			log.info(";> Username ["+username+"] ne postoji u bazi. " + e);
+		} 
 		return result;
 	}
 

@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
 	public User findUserByUsername(String username) {
 		User user = userDAO.findUserByUsername(username);
-		log.info(":> User: " + user.getId());
+		log.info(":> User: " + (user!=null?user.getId():"NULL"));
 		return user;
 	}
 

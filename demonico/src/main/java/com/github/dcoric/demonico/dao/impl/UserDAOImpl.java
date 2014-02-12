@@ -7,6 +7,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,24 +49,25 @@ public class UserDAOImpl implements UserDAO {
 
 	public List<User> findUserByName(String firstName, String lastName) {
 		
-		List<User> result = new ArrayList<User>();
+		List<User> result = null;
 		String queryString = "from User u where 1=1 "
 				+ (firstName!=null? "and u.firstName = :fistName " : "")
 				+ (lastName!=null? "and u.lastName = :lastName":"")
 				+ "order by u.firstName";
-		
-		Query query = sessionFactory.getCurrentSession().createQuery(queryString);
+		Session session = sessionFactory.openSession();
+		Query query = session.createQuery(queryString);
 		if(firstName!=null)
 			query.setParameter("firstName", firstName);
 		if(lastName!=null)
 			query.setParameter("lastName", lastName);
 		try{
 			result = query.list();
+			session.flush();
+			session.close();
 		} catch(NoResultException e) {
 			log.warn("No results! (error msg: " + e + ")");
 		}
 
-		
 		return result;
 	}
 
@@ -76,7 +78,8 @@ public class UserDAOImpl implements UserDAO {
 		String queryString = "from User u where u.username = :username";
 		Query query = null;
 		try{
-		query = sessionFactory.getCurrentSession().createQuery(queryString);
+		Session session = sessionFactory.openSession();
+		query = session.createQuery(queryString);
 		query.setParameter("username", username);
 		} catch (Exception e) {
 			log.error(e);

@@ -53,4 +53,14 @@ public class UserServiceImpl implements UserService {
 		return user;
 	}
 
+	@Transactional
+	public List<User> findAll() {
+		return userDAO.findAll();
+	}
+
+	@Transactional
+	public User findUserUsernamePassword(String username, String password) {
+		return userDAO.findUserUsernamePassword(username, password);
+	}
+
 }

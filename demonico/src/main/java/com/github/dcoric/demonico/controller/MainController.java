@@ -2,8 +2,8 @@ package com.github.dcoric.demonico.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,7 @@ import com.github.dcoric.demonico.service.UserService;
 public class MainController {
 	
 	private static Logger log = Logger.getLogger(MainController.class);
+	private User user;
 	
 	@Autowired(required=true)
 	private UserService userService;
@@ -31,12 +32,8 @@ public class MainController {
 	
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String home(ModelMap model) {
-		log.info("Welcome!");
-		User user = new User();
-		user.setFirstName("Denis");
-		user.setInsertionDate(Calendar.getInstance().getTime());
-		model.addAttribute(user);
-		return "index";
+		log.info(":> pocetna strana.");
+		return execute(model);
 	}
 	
 	@RequestMapping(value = "/newUser", method = RequestMethod.POST)
@@ -46,29 +43,66 @@ public class MainController {
 			@RequestParam(required=false) String birthDate, 
 			@RequestParam(required=false) String firstName, 
 			@RequestParam(required=false) String lastName) {
-		log.info(";> TEST!");
-		log.info("'> username: " + username);
-		log.info(";> password: " + password);
-		log.info(":> firstName: " + firstName);
-		log.info("'> lastName: " + lastName);
+
 		SimpleDateFormat formatter = new SimpleDateFormat("dd.mm.yyyy");
 		Date date = new Date();
 		try {
 			date = formatter.parse(birthDate);
 		} catch (ParseException e) {
-			log.warn(e);
+			log.warn("Pogresan format. Pokusavam alternativni format!");
+			formatter = new SimpleDateFormat("dd/mm/yyyy");
+			try {
+				date = formatter.parse(birthDate);
+			} catch (ParseException e1) {
+				log.warn("Pogresan format! Odustajem! greska: " + e1);
+				
+			}
 		}
 		log.info(";> birthDate: " + date);
 		User user = setUserData(username, password, firstName, lastName,
 				date);
 		if(userService.findUserByUsername(username) == null){
 			userService.persistUser(user);
+			log.info(":> User sacuvan!");
 			model.addAttribute("success", true);
 		}
 		
 		model.addAttribute(user);
 		
-		return "index";
+		return execute(model);
+	}
+	
+	@RequestMapping(value = "/viewUsers", method = RequestMethod.GET)
+	public String viewAllUsers(ModelMap model) {
+		
+		List<User> allUsers = userService.findAll();
+		log.info(":> User list: " + allUsers.size());
+		model.addAttribute("allUsers", allUsers);
+		return execute(model);
+	}
+	
+	@RequestMapping(value = "/addUser", method = RequestMethod.GET)
+	public String userAddForm(ModelMap model) {
+		log.info("Inicijalizovano dodavanje korisnika");
+		model.addAttribute("addUser", true);
+		return execute(model);
+	}
+	
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public String userAddForm(ModelMap model,
+			@RequestParam(required=true) String username,
+			@RequestParam(required=true) String password ) {
+		user = userService.findUserUsernamePassword(username, password);
+		log.info("Korisnik " + username + (user!=null?" se uspesno ulogovao":" se nije ulogovao zbog pogresnog username/password-a!"));
+		model.addAttribute("errorMessage", "Pogresan username ili password!");
+		return execute(model);
+	}
+	
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public String logout(ModelMap model) {
+		user = null;
+		
+		return execute(model);
 	}
 
 	private User setUserData(String username, String password,
@@ -81,6 +115,14 @@ public class MainController {
 		user.setBirthDate(birthDate);
 		user.setInsertionDate(new Date());
 		return user;
+	}
+	
+	private String execute(ModelMap model) {
+		if(user!=null) {
+			model.addAttribute(user);
+			model.addAttribute("title", "Home page");
+		}
+		return "index";
 	}
 
 	public UserService getUserService() {

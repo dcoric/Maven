@@ -1,74 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="">
-<meta name="author" content="">
-<link rel="shortcut icon" href="<c:url value='/ico/favicon.png' />">
-<!-- <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet"> -->
-<link
-	href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css"
-	rel="stylesheet">
-<title>Testing Ground for Bootstrap</title>
-
-<!-- Bootstrap core CSS -->
-<link href="<c:url value='/css/bootstrap.css' />" rel="stylesheet">
-<link href="<c:url value='/css/datepicker3.css' />" rel="stylesheet">
-<!-- Bootstrap core JavaScript
-    ================================================== -->
-<script src="<c:url value='/js/jquery.min.js' />"></script>
-<script src="<c:url value='/js/bootstrap.min.js' />"></script>
-<script src="<c:url value='/js/bootstrap-datepicker.rs-latin.js' />"></script>
-<script src="<c:url value='/js/bootstrap-datepicker.js' />"></script>
-
-<script>
-$(document).ready(function(){
-	var nowTemp = new Date();
-	var now = new Date('dd.mm.yyyy', nowTemp);
-	$('#sandbox-container .input-group.date').datepicker({
-	    format: "dd.mm.yyyy",
-	    weekStart: 1
-	});
-});
-
-</script>
-</head>
-
-<body>
-	<nav class="navbar navbar-inverse col-lg-8 col-lg-offset-2" role="navigation">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse"
-				data-target=".navbar-ex1-collapse">
-				<span class="sr-only">Toggle navigation</span> <span
-					class="icon-bar"></span> <span class="icon-bar"></span> <span
-					class="icon-bar"></span>
-			</button>
-			<a class="navbar-brand" href="#">Brand ${test}</a>
-		</div>
-		<p class="navbar-text pull-right">
-			Signed in as <a href="#" class="navbar-link">
-			<c:choose>
-				<c:when test="${not empty user.firstName}">
-				${user.firstName}
-				</c:when>
-				<c:otherwise>
-					Demonico Admin
-				</c:otherwise>
-			</c:choose>
-			</a>
-		</p>
-		<!-- /.navbar-collapse -->
-	</nav>
-
-
-	<div class="col-lg-8 col-lg-offset-2">
+<%@ include file="includes/common.inc" %>
+<%@ include file="includes/navbar.jsp" %>
+	
+	<!-- Container begins -->
+	<div class="col-lg-10 col-lg-offset-1">
 		<!-- Example row of columns -->
-		<div class="col-lg-2">
+		<div class="col-lg-4">
 			<div class="panel panel-info">
 				<div class="panel-heading">
 					<h3 class="panel-title">Test!</h3>
@@ -91,20 +28,20 @@ $(document).ready(function(){
 			</div>
 		</div>
 		<div class="col-lg-8">
-			<div class="jumbotron">
-				<div class="container">
+			<div class="jumbotron" style=" background-image: url(<c:url value='/img/BG_BillboardLeaf.png'/>);">
 					<h1>Hello, world!</h1>
 					<p>...</p>
 					<p>
-						<a class="btn btn-primary btn-lg" href="home">Test!</a>
+						<a class="btn btn-primary btn-lg" href="addUser">Add user</a>
+						<a class="btn btn-info btn-lg" href="viewUsers">View all users</a>
+						<a class="btn btn-danger btn-lg" href="logout">Sign out</a>
 					</p>
-				</div>
 			</div>
 			<div class="well">
 			<c:choose>
-			<c:when test="success==true"><h2>Saved!</h2></c:when>
-			<c:otherwise>
-			<h2>New User</h2>
+			<c:when test="${success == true}"><h2>Saved!</h2></c:when>
+			<c:when test="${addUser == true}">
+				<h2>New User</h2>
 				<form class="form-horizontal" role="form" method="POST" action="newUser">
 				  <div class="form-group">
 				    <label for="inputUsername" class="col-sm-2 control-label">Username</label>
@@ -141,11 +78,64 @@ $(document).ready(function(){
 				  
 				  <div class="form-group">
 				    <div class="col-sm-offset-2 col-sm-10">
+				      <button type="submit" class="btn btn-default">Add user</button>
+				    </div>
+				  </div>
+				</form>
+			</c:when>
+			<c:when test="${fn:length(allUsers) gt 0 }">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Username</th>
+							<th>First name</th>
+							<th>Last name</th>
+							<th>Birth date</th>
+							<th>User since</th>
+						</tr>
+					</thead>
+					<tbody>
+					<c:forEach var="user" items="${allUsers}">
+					<tr>
+						<td>${user.username}</td>
+						<td>${user.firstName}</td>
+						<td>${user.lastName}</td>
+						<td><fmt:formatDate pattern="dd.MM.&#39;yy." 
+          								value="${user.birthDate}" /></td>
+        			    <td><fmt:formatDate pattern="dd.MM.&#39;yy." 
+           								value="${user.insertionDate}" /></td>
+					</tr>
+					</c:forEach>
+					</tbody>
+				</table>
+			</c:when>
+			<c:when test="${empty user.username }">
+				<c:if test="${not empty errorMessage }">
+					<div class="alert alert-danger">${errorMessage }</div>
+				</c:if>
+				<form class="form-horizontal" role="form" method="POST" action="login">
+				  <div class="form-group">
+				    <label for="inputUsername" class="col-sm-2 control-label">Username</label>
+				    <div class="col-sm-10">
+				      <input name="username" type="text" class="form-control" id="inputUsername" placeholder="Username">
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="inputPassword" class="col-sm-2 control-label">Password</label>
+				    <div class="col-sm-10">
+				      <input name="password" type="password" class="form-control" id="inputPassword" placeholder="Password">
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <div class="col-sm-offset-9 col-sm-2">
 				      <button type="submit" class="btn btn-default">Sign in</button>
 				    </div>
 				  </div>
 				</form>
-				</c:otherwise>
+			</c:when>
+			<c:otherwise>
+					<h1 class="text-success">Dobro došli, ${user.firstName}</h1>
+			</c:otherwise>
 			</c:choose>
 			</div>
 		</div>
@@ -153,9 +143,4 @@ $(document).ready(function(){
 	</div>
 	<!-- /container -->
 
-
-
-
-
-</body>
-</html>
+<%@ include file="includes/footer.jsp" %>

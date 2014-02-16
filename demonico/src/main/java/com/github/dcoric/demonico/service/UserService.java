@@ -10,6 +10,10 @@ public interface UserService {
 	
 	public User findUserById(Integer id);
 	
+	public User findUserUsernamePassword(String username, String password);
+	
+	public List<User> findAll();
+	
 	public List<User> findUserByName(String firstName, String lastName);
 	
 	public void updateUser(User user);

@@ -32,7 +32,7 @@ public class MainController {
 	
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String home(ModelMap model) {
-		log.info(":> pocetna strana.");
+		log.info(":> Pocetna strana.");
 		return execute(model);
 	}
 	
